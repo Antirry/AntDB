@@ -15,6 +15,11 @@ def test():
     db.delete_many("T", [4, 5])
     print(db.get_many("T", [1, 2, 3]))
     print(db._db)
+    print(db.filter_key_db("T", "> 2"))
+    db.create_table("T1")
+    db.insert_many("T1", [6, ["First Entry", 7], 7, "Second Entry"])
+    print(db._db)
+    print("\n\n", db.filter_value_db("T1", "> 6"))
 
 
 test()
