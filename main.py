@@ -76,6 +76,7 @@ class AntDb:
             try:
                 return dict(
                     filter(lambda elem: eval("elem[0] " + str_sort_key_with_comparison), self._db[table_name].items()))
+
             except Exception as ex:
                 print("Ошибка фильтра -> ", ex)
                 return None
@@ -83,20 +84,19 @@ class AntDb:
     def filter_value_db(self, table_name: Union[str, int, float], str_sort_values_with_comparison: Any) -> Any:
         if table_name in self._db.keys():
             try:
-                print(self._db[table_name].items())
                 """ Для одного элемента
                 return dict(filter(lambda elem: eval(str_sort_values + " elem[1]"), self._db[table_name].items()))"""
 
                 """Для списка элементов"""
                 if "in" in str_sort_values_with_comparison:
-                    return {key: val for key, val in self._db[table_name].items() if
-                            any(eval(str_sort_values_with_comparison + " s") for s in val)}
+                    return dict(filter(lambda elem: any(eval(str_sort_values_with_comparison + " i") for i in elem[1]),
+                                       self._db[table_name].items()))
                 else:
-                    # return dict(filter(lambda elem: any(eval("i_1 " + str_sort_values_with_comparison) for i in elem for i_1 in i),
-                    #                    self._db[table_name].items()))
-                    return {key: val for key, val in self._db[table_name].items() if
-                            any(s is Union[int, float] and eval("s " + str_sort_values_with_comparison) for s in val)}
-            #     any(eval("s " + str_sort_values_with_comparison) for s in val)
+                    return dict(filter(
+                        lambda elem: any(
+                            eval("i " + str_sort_values_with_comparison) for i in elem[1] if type(i) == int),
+                        self._db[table_name].items()))
+
             except Exception as ex:
                 print("Ошибка фильтра -> ", ex)
                 return None

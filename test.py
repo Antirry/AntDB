@@ -19,7 +19,8 @@ def test():
     db.create_table("T1")
     db.insert_many("T1", [6, ["First Entry", 7], 7, "Second Entry"])
     print(db._db)
-    print("\n\n", db.filter_value_db("T1", "> 6"))
+    print(db.filter_value_db("T1", "< 8"))
+    print(db.filter_value_db("T1", "'E' in"))
 
 
 test()
