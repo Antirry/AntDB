@@ -1,6 +1,7 @@
 import json
 from typing import Any, Union
 import os
+import re
 
 
 class AntDb:
@@ -88,15 +89,22 @@ class AntDb:
                 return dict(filter(lambda elem: eval(str_sort_values + " elem[1]"), self._db[table_name].items()))"""
 
                 """Для списка элементов"""
-                if "in" in str_sort_values_with_comparison:
-                    return dict(filter(lambda elem: any(eval(str_sort_values_with_comparison + " i") for i in elem[1]),
-                                       self._db[table_name].items()))
+                string_numbers = any(e.isdigit() for e in str_sort_values_with_comparison)
+
+                if string_numbers is True:
+                    return dict(filter(
+                        lambda elem: any(
+                            eval("i " + str_sort_values_with_comparison) for i in elem[1] if
+                            type(i) == int or type(i) == float),
+                        self._db[table_name].items()))
+
                 else:
                     return dict(filter(
                         lambda elem: any(
-                            eval("i " + str_sort_values_with_comparison) for i in elem[1] if type(i) == int),
+                            eval(str_sort_values_with_comparison + " i") for i in elem[1] if type(i) == str),
                         self._db[table_name].items()))
 
             except Exception as ex:
                 print("Ошибка фильтра -> ", ex)
+                print("Возможно не тот тип данных (Исп. (int, float, str))")
                 return None
