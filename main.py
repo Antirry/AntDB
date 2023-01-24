@@ -1,7 +1,7 @@
 import json
 from typing import Any, Union
 import os
-import re
+from AntFunction.AntFilters import int_float_filter, str_filter, int_key
 
 
 class AntDb:
@@ -72,37 +72,24 @@ class AntDb:
                 return True
         return False
 
-    def filter_key_db(self, table_name: Union[str, int, float], str_sort_key_with_comparison: str) -> Any:
+    def filter_key(self, table_name: Union[str, int, float], str_sort_key_with_comparison: str) -> Any:
         if table_name in self._db.keys():
             try:
-                return dict(
-                    filter(lambda elem: eval("elem[0] " + str_sort_key_with_comparison), self._db[table_name].items()))
+                return int_key(self._db[table_name], str_sort_key_with_comparison)
 
             except Exception as ex:
                 print("Ошибка фильтра -> ", ex)
                 return None
 
-    def filter_value_db(self, table_name: Union[str, int, float], str_sort_values_with_comparison: Any) -> Any:
+    def filter_value(self, table_name: Union[str, int, float], str_sort_values_with_comparison: str) -> Any:
         if table_name in self._db.keys():
             try:
-                """ Для одного элемента
-                return dict(filter(lambda elem: eval(str_sort_values + " elem[1]"), self._db[table_name].items()))"""
-
-                """Для списка элементов"""
                 string_numbers = any(e.isdigit() for e in str_sort_values_with_comparison)
 
                 if string_numbers is True:
-                    return dict(filter(
-                        lambda elem: any(
-                            eval("i " + str_sort_values_with_comparison) for i in elem[1] if
-                            type(i) == int or type(i) == float),
-                        self._db[table_name].items()))
-
+                    return int_float_filter(self._db[table_name], str_sort_values_with_comparison)
                 else:
-                    return dict(filter(
-                        lambda elem: any(
-                            eval(str_sort_values_with_comparison + " i") for i in elem[1] if type(i) == str),
-                        self._db[table_name].items()))
+                    return str_filter(self._db[table_name], str_sort_values_with_comparison)
 
             except Exception as ex:
                 print("Ошибка фильтра -> ", ex)

@@ -15,12 +15,16 @@ def test():
     db.delete_many("T", [4, 5])
     print(db.get_many("T", [1, 2, 3]))
     print(db._db)
-    print(db.filter_key_db("T", "> 2"))
+    print(db.filter_key("T", "2 <"))
     db.create_table("T1")
-    db.insert_many("T1", [6, ["First Entry", 7, 'Ваф'], 7, ["Second Entry", 3.9]])
+    db.insert_many("T1", [6, ["First Entry", 5, 'Ваф'], 7, ["Second Entry", 3.9]])
     print(db._db)
-    print(db.filter_value_db("T1", "< 5.4"))
-    print(db.filter_value_db("T1", "'Ваф' in"))
+    print(db.filter_value("T1", "'Ваф' in"))
+    print(db.filter_value("T1", "3 <"))
+
+    # Для нескольких фильтров
+    print(db.filter_value("T1", "'Ваф' in").items() or db.filter_value("T1", "3 >").items())
+    # print(db.filter_key("T", ""))
 
 
 test()
