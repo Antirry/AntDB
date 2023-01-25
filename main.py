@@ -95,3 +95,52 @@ class AntDb:
                 print("Ошибка фильтра -> ", ex)
                 print("Возможно не тот тип данных (Исп. (int, float, str))")
                 return None
+
+    def many_filters_value(self, table_name: Union[str, int, float], str_logical_sort_oper_with_comparison: str) -> Any:
+        if table_name in self._db.keys():
+            try:
+                list_words_oper_values = str_logical_sort_oper_with_comparison.split()
+
+                logic_oper_list = ['and', 'or', 'not']
+                str_indexes_opers_dict = {i: list_words_oper_values[i] for i in range(len(list_words_oper_values)) if
+                                          list_words_oper_values[i] in logic_oper_list}
+                i_val_dict = 0
+                indexes = [i[0] for i in str_indexes_opers_dict.items()]
+                opers = [i[1] for i in str_indexes_opers_dict.items()]
+
+                for index in indexes:
+                    str_code = list_words_oper_values[index - 2] + " " + list_words_oper_values[index - 1]
+                    string_numbers = any(e.isdigit() for e in str_code)
+
+                    if string_numbers is True:
+                        locals()["dict_values" + str(i_val_dict)] = int_float_filter(self._db[table_name],
+                                                                                     str_code)
+                        i_val_dict += 1
+                    else:
+                        locals()["dict_values" + str(i_val_dict)] = str_filter(self._db[table_name], str_code)
+                        i_val_dict += 1
+
+                str_code = list_words_oper_values[max(indexes) + 1] + " " + list_words_oper_values[
+                    max(indexes) + 2]
+                string_numbers = any(e.isdigit() for e in str_code)
+
+                if string_numbers is True:
+                    locals()["dict_values" + str(i_val_dict)] = int_float_filter(self._db[table_name],
+                                                                                 str_code)
+                    i_val_dict += 1
+                else:
+                    locals()["dict_values" + str(i_val_dict)] = str_filter(self._db[table_name], str_code)
+                    i_val_dict += 1
+
+                sort_dict = eval('locals()["dict_values" + str(0)].items()' + ' ' + opers[
+                    0] + ' ' + 'locals()["dict_values" + str(0 + 1)].items()')
+
+                for i in range(len(opers[1:])):
+                    sort_dict = eval('sort_dict' + ' ' + opers[i] + ' ' + 'locals()["dict_values" + str(i)].items()')
+
+                return dict(sort_dict)
+
+            except Exception as ex:
+                print("Ошибка фильтра -> ", ex)
+                print("Возможно не тот тип данных (Исп. (int, float, str))")
+                return None
