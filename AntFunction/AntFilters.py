@@ -36,11 +36,11 @@ def check_dict_indexes_opers(str_logical_sort_oper_with_comparison: str) -> list
     return [str_indexes_opers_dict, list_words_oper_values]
 
 
-def check_string_filter(str_code: str, table_dict: dict):
+def check_string_filter(str_code: str, table_dict: dict) -> Any:
     string_numbers = any(e.isdigit() for e in str_code)
 
-    if string_numbers is True:
+    try:
         return int_float_filter(table_dict, str_code)
-    else:
+    except:
         return str_filter(table_dict, str_code)
 
