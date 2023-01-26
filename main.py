@@ -1,7 +1,7 @@
 import json
 from typing import Any, Union
 import os
-from AntFunction.AntFilters import int_float_filter, str_filter, int_key
+from AntFunction.AntFilters import int_key, check_dict_indexes_opers, check_string_filter
 
 
 class AntDb:
@@ -84,12 +84,7 @@ class AntDb:
     def filter_value(self, table_name: Union[str, int, float], str_sort_values_with_comparison: str) -> Any:
         if table_name in self._db.keys():
             try:
-                string_numbers = any(e.isdigit() for e in str_sort_values_with_comparison)
-
-                if string_numbers is True:
-                    return int_float_filter(self._db[table_name], str_sort_values_with_comparison)
-                else:
-                    return str_filter(self._db[table_name], str_sort_values_with_comparison)
+                return check_string_filter(str_sort_values_with_comparison, self._db[table_name])
 
             except Exception as ex:
                 print("Ошибка фильтра -> ", ex)
@@ -99,46 +94,39 @@ class AntDb:
     def many_filters_value(self, table_name: Union[str, int, float], str_logical_sort_oper_with_comparison: str) -> Any:
         if table_name in self._db.keys():
             try:
-                list_words_oper_values = str_logical_sort_oper_with_comparison.split()
+                str_indexes_opers_dict, list_words_oper_values = check_dict_indexes_opers(
+                    str_logical_sort_oper_with_comparison)
 
-                logic_oper_list = ['and', 'or', 'not']
-                str_indexes_opers_dict = {i: list_words_oper_values[i] for i in range(len(list_words_oper_values)) if
-                                          list_words_oper_values[i] in logic_oper_list}
-                i_val_dict = 0
                 indexes = [i[0] for i in str_indexes_opers_dict.items()]
                 opers = [i[1] for i in str_indexes_opers_dict.items()]
+                i_val_dict = 0
 
                 for index in indexes:
                     str_code = list_words_oper_values[index - 2] + " " + list_words_oper_values[index - 1]
-                    string_numbers = any(e.isdigit() for e in str_code)
 
-                    if string_numbers is True:
-                        locals()["dict_values" + str(i_val_dict)] = int_float_filter(self._db[table_name],
-                                                                                     str_code)
-                        i_val_dict += 1
-                    else:
-                        locals()["dict_values" + str(i_val_dict)] = str_filter(self._db[table_name], str_code)
-                        i_val_dict += 1
+                    locals()["dict_values" + str(i_val_dict)] = check_string_filter(str_code, self._db[table_name])
+                    i_val_dict += 1
 
                 str_code = list_words_oper_values[max(indexes) + 1] + " " + list_words_oper_values[
                     max(indexes) + 2]
-                string_numbers = any(e.isdigit() for e in str_code)
+                locals()["dict_values" + str(i_val_dict)] = check_string_filter(str_code, self._db[table_name])
 
-                if string_numbers is True:
-                    locals()["dict_values" + str(i_val_dict)] = int_float_filter(self._db[table_name],
-                                                                                 str_code)
-                    i_val_dict += 1
-                else:
-                    locals()["dict_values" + str(i_val_dict)] = str_filter(self._db[table_name], str_code)
-                    i_val_dict += 1
+                sort_dict_list = list()
+                sort_dict_list.append(eval(fr'locals()["dict_values" + str({0})].items()' + ' ' + opers[
+                    0] + ' ' + fr'locals()["dict_values" + str({0 + 1})].items()'))
 
-                sort_dict = eval('locals()["dict_values" + str(0)].items()' + ' ' + opers[
-                    0] + ' ' + 'locals()["dict_values" + str(0 + 1)].items()')
+                """
+                range(len(opers)-1 так как я использовал одну переменную, поэтому я ее убираю,
+                поэтому i+1 потому что мы посчитаем после одной логической операции (для зацикливания)
+                
+                (i+1)+1 так как мы считаем после двух переменных-операций со словарями
+                """
 
-                for i in range(len(opers[1:])):
-                    sort_dict = eval('sort_dict' + ' ' + opers[i] + ' ' + 'locals()["dict_values" + str(i)].items()')
+                for i in range(len(opers)-1):
+                    sort_dict_list.append(eval(f'sort_dict_list[{i}]' + ' ' + opers[
+                        i + 1] + ' ' + f'locals()["dict_values" + str({(i + 1) + 1})].items()'))
 
-                return dict(sort_dict)
+                return dict(sort_dict_list[-1])
 
             except Exception as ex:
                 print("Ошибка фильтра -> ", ex)

@@ -22,10 +22,18 @@ def test():
     # print(db.filter_value("T1", "'Ваф' in"))
     # print(db.filter_value("T1", "3 <"))
     #
-    # # Для нескольких фильтров
-    # print(dict(db.filter_value("T1", "'Ваф' in").items() or db.filter_value("T1", "3 >").items()))
-    print(db.many_filters_value("T1", "'Ваф' in and 3 < and 2 > or 5 < or 'Ent' in"))
-    # print(db.filter_key("T", ""))
+    print("Для нескольких фильтров")
+    print(dict(db.filter_value("T1", "'Ваф' in").items())
+          and dict(db.filter_value("T1", "'Sec' in").items())
+          and dict(db.filter_value("T1", "5 <"))
+          or dict(db.filter_value("T1", "'Ваф' in").items()))
+
+    print('\n\n\n\n')
+
+    print(db.many_filters_value("T1", "'Ваф' in and 'Sec' in and 5 < or 'Ваф' in"))
+
+    """СДЕЛАТЬ ДЛЯ ПЕРЕМЕННЫХ, А НЕ СПИСКОВ"""
+    # print(db.many_filters_value("T", "'Sec' in or 'Fir' in or 'Th' in"))
 
 
 test()
