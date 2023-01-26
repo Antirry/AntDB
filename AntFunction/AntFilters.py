@@ -12,14 +12,14 @@ def int_key(table_dict: dict, str_sort_key_with_comparison: str) -> Any:
                table_dict.items()))
 
 
-def int_float_filter(table_dict: dict, str_sort_values_with_comparison: str) -> Any:
+def int_float_filter_list_val(table_dict: dict, str_sort_values_with_comparison: str) -> Any:
     return dict(filter(
         lambda elem: any(
             eval(str_sort_values_with_comparison + " i") for i in elem[1] if
             type(i) == int or type(i) == float), table_dict.items()))
 
 
-def str_filter(table_dict: dict, str_sort_values_with_comparison: str) -> Any:
+def str_filter_list_val(table_dict: dict, str_sort_values_with_comparison: str) -> Any:
     return dict(filter(
         lambda elem: any(
             eval(str_sort_values_with_comparison + " i") for i in elem[1] if type(i) == str),
@@ -38,9 +38,11 @@ def check_dict_indexes_opers(str_logical_sort_oper_with_comparison: str) -> list
 
 def check_string_filter(str_code: str, table_dict: dict) -> Any:
     string_numbers = any(e.isdigit() for e in str_code)
+    # check_val_list = any(type(v) == list for k, v in table_dict.items())
 
-    try:
-        return int_float_filter(table_dict, str_code)
-    except:
-        return str_filter(table_dict, str_code)
-
+    if string_numbers is True:
+        # if check_val_list is True:
+        return int_float_filter_list_val(table_dict, str_code)
+    else:
+        # if check_val_list is True:
+        return str_filter_list_val(table_dict, str_code)

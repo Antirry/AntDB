@@ -22,7 +22,7 @@ def test():
     # print(db.filter_value("T1", "'Ваф' in"))
     # print(db.filter_value("T1", "3 <"))
     #
-    print("Для нескольких фильтров")
+    print("\n Для нескольких фильтров \n")
     print(dict(db.filter_value("T1", "'Ваф' in").items())
           and dict(db.filter_value("T1", "'Sec' in").items())
           and dict(db.filter_value("T1", "5 <"))
@@ -32,8 +32,16 @@ def test():
 
     print(db.many_filters_value("T1", "'Ваф' in and 'Sec' in and 5 < or 'Ваф' in"))
 
-    """СДЕЛАТЬ ДЛЯ ПЕРЕМЕННЫХ, А НЕ СПИСКОВ"""
-    # print(db.many_filters_value("T", "'Sec' in or 'Fir' in or 'Th' in"))
+
+    """
+    СДЕЛАТЬ ДЛЯ ПЕРЕМЕННЫХ, А НЕ СПИСКОВ
+    
+    функции, которые будут принимать такие же значения что и для списка элементов
+    и проверка будет через if в функции AntFunction.AntFilters.check_string_filter_list_val()
+    
+    """
+    # print('\n\n\n\n')
+    # print(db.filter_value("T", "'Sec' in and 'on' in and 'd' in"))
 
 
 test()
