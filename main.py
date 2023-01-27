@@ -1,7 +1,7 @@
 import json
 from typing import Any, Union
 import os
-from AntFunction.AntFilters import int_key, check_dict_indexes_opers, check_string_filter
+from AntFunction.AntFilters import int_key, check_dict_indexes_opers, list_check_string_filter
 
 
 class AntDb:
@@ -39,7 +39,7 @@ class AntDb:
             return self._db[table_name].get(key)
         return None
 
-    def delete(self, table_name: Union[str, int, float], key: Union[str, int, float]) -> Any:
+    def delete_key(self, table_name: Union[str, int, float], key: Union[str, int, float]) -> Any:
         if table_name in self._db.keys():
             table = self._db[table_name]
             if key in table.keys():
@@ -48,8 +48,7 @@ class AntDb:
                 return True
         return False
 
-    def insert_many(self, table_name: Union[str, int, float],
-                    keys_values_list: list[Union[str, int, float], Any]) -> None:
+    def insert_many(self, table_name: Union[str, int, float], keys_values_list: list[Union[str, int, float]]) -> None:
         if not table_name in self._db.keys():
             self._db[table_name] = {}
         init = iter(keys_values_list)
@@ -84,7 +83,7 @@ class AntDb:
     def filter_value(self, table_name: Union[str, int, float], str_sort_values_with_comparison: str) -> Any:
         if table_name in self._db.keys():
             try:
-                return check_string_filter(str_sort_values_with_comparison, self._db[table_name])
+                return list_check_string_filter(str_sort_values_with_comparison, self._db[table_name])
 
             except Exception as ex:
                 print("Ошибка фильтра -> ", ex)
@@ -94,6 +93,8 @@ class AntDb:
     def many_filters_value(self, table_name: Union[str, int, float], str_logical_sort_oper_with_comparison: str) -> Any:
         if table_name in self._db.keys():
             try:
+                check_table_dict = all(type(v) == list for v in self._db[table_name].values())
+
                 str_indexes_opers_dict, list_words_oper_values = check_dict_indexes_opers(
                     str_logical_sort_oper_with_comparison)
 
@@ -104,12 +105,12 @@ class AntDb:
                 for index in indexes:
                     str_code = list_words_oper_values[index - 2] + " " + list_words_oper_values[index - 1]
 
-                    locals()["dict_values" + str(i_val_dict)] = check_string_filter(str_code, self._db[table_name])
+                    locals()["dict_values" + str(i_val_dict)] = list_check_string_filter(str_code, self._db[table_name])
                     i_val_dict += 1
 
                 str_code = list_words_oper_values[max(indexes) + 1] + " " + list_words_oper_values[
                     max(indexes) + 2]
-                locals()["dict_values" + str(i_val_dict)] = check_string_filter(str_code, self._db[table_name])
+                locals()["dict_values" + str(i_val_dict)] = list_check_string_filter(str_code, self._db[table_name])
 
                 sort_dict_list = list()
                 sort_dict_list.append(eval(fr'locals()["dict_values" + str({0})].items()' + ' ' + opers[
@@ -120,13 +121,19 @@ class AntDb:
                 поэтому i+1 потому что мы посчитаем после одной логической операции (для зацикливания)
                 
                 (i+1)+1 так как мы считаем после двух переменных-операций со словарями
+                
+                sort_dict_list[-1] потому что я хочу вывести ответ, а не все этапы
                 """
 
                 for i in range(len(opers)-1):
                     sort_dict_list.append(eval(f'sort_dict_list[{i}]' + ' ' + opers[
                         i + 1] + ' ' + f'locals()["dict_values" + str({(i + 1) + 1})].items()'))
 
-                return dict(sort_dict_list[-1])
+                if check_table_dict is False:
+                    return {k: v[0] for k, v in dict(sort_dict_list[-1]).items()}
+
+                else:
+                    return dict(sort_dict_list[-1])
 
             except Exception as ex:
                 print("Ошибка фильтра -> ", ex)

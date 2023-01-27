@@ -22,26 +22,24 @@ def test():
     # print(db.filter_value("T1", "'Ваф' in"))
     # print(db.filter_value("T1", "3 <"))
     #
+    # db.insert("T1", 10, 'Fiftieth Entry')
+
     print("\n Для нескольких фильтров \n")
-    print(dict(db.filter_value("T1", "'Ваф' in").items())
-          and dict(db.filter_value("T1", "'Sec' in").items())
-          and dict(db.filter_value("T1", "5 <"))
-          or dict(db.filter_value("T1", "'Ваф' in").items()))
+    print(dict(db.filter_value("T1", "'Ent' in").items())
+          or dict(db.filter_value("T1", "'Th' in")).items()
+          or dict(db.filter_value("T1", "'f' in")).items())
 
     print('\n\n\n\n')
 
-    print(db.many_filters_value("T1", "'Ваф' in and 'Sec' in and 5 < or 'Ваф' in"))
+    print(db.many_filters_value("T1", "'Ent' in or 'Th' in or 'f' in"))
 
+    print(db.many_filters_value("T", "'Ent' in or 'Th' in"))
 
     """
-    СДЕЛАТЬ ДЛЯ ПЕРЕМЕННЫХ, А НЕ СПИСКОВ
+    СДЕЛАТЬ ФУНКЦИЮ С В main.py где будет редактирование ключей, значений словаря
     
-    функции, которые будут принимать такие же значения что и для списка элементов
-    и проверка будет через if в функции AntFunction.AntFilters.check_string_filter_list_val()
-    
+    как AntFunction.AntFilters.edit_one_to_list_val()
     """
-    # print('\n\n\n\n')
-    # print(db.filter_value("T", "'Sec' in and 'on' in and 'd' in"))
 
 
 test()

@@ -12,6 +12,14 @@ def int_key(table_dict: dict, str_sort_key_with_comparison: str) -> Any:
                table_dict.items()))
 
 
+def edit_one_to_list_val(table_dict: dict) -> Any:
+    dict_val_list = {k: [''.join(word) for word in zip(*list(v))] for k, v in table_dict.items() if type(v) is not list}
+
+    table_dict.update(dict_val_list)
+
+    return table_dict
+
+
 def int_float_filter_list_val(table_dict: dict, str_sort_values_with_comparison: str) -> Any:
     return dict(filter(
         lambda elem: any(
@@ -36,13 +44,10 @@ def check_dict_indexes_opers(str_logical_sort_oper_with_comparison: str) -> list
     return [str_indexes_opers_dict, list_words_oper_values]
 
 
-def check_string_filter(str_code: str, table_dict: dict) -> Any:
+def list_check_string_filter(str_code: str, table_dict: dict) -> Any:
     string_numbers = any(e.isdigit() for e in str_code)
-    # check_val_list = any(type(v) == list for k, v in table_dict.items())
 
     if string_numbers is True:
-        # if check_val_list is True:
-        return int_float_filter_list_val(table_dict, str_code)
+        return int_float_filter_list_val(edit_one_to_list_val(table_dict), str_code)
     else:
-        # if check_val_list is True:
-        return str_filter_list_val(table_dict, str_code)
+        return str_filter_list_val(edit_one_to_list_val(table_dict), str_code)
