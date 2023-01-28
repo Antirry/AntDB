@@ -39,6 +39,12 @@ class AntDb:
             return self._db[table_name].get(key)
         return None
 
+    def edit_value(self, table_name: Union[str, int, float],  key: Union[str, int, float], value: Any) -> None:
+        if not table_name in self._db.keys():
+            self._db[table_name] = {}
+        self._db[table_name][key] = value
+        self._save()
+
     def delete_key(self, table_name: Union[str, int, float], key: Union[str, int, float]) -> Any:
         if table_name in self._db.keys():
             table = self._db[table_name]
@@ -47,6 +53,13 @@ class AntDb:
                 self._save()
                 return True
         return False
+
+    def edit_value_many(self, table_name: Union[str, int, float], keys_values_list: list[Union[str, int, float]]) -> None:
+        if not table_name in self._db.keys():
+            self._db[table_name] = {}
+        init = iter(keys_values_list)
+        self._db[table_name].update(dict(zip(init, init)))
+        self._save()
 
     def insert_many(self, table_name: Union[str, int, float], keys_values_list: list[Union[str, int, float]]) -> None:
         if not table_name in self._db.keys():
@@ -61,7 +74,7 @@ class AntDb:
             return [self._db[table_name].get(k) for k in keys_list]
         return None
 
-    def delete_many(self, table_name: Union[str, int, float], keys_list: list[Union[str, int, float]]) -> Any:
+    def delete_many_key(self, table_name: Union[str, int, float], keys_list: list[Union[str, int, float]]) -> Any:
         if table_name in self._db.keys():
             table = self._db[table_name]
             keys_list = tuple(keys_list)
