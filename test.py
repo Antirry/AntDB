@@ -24,6 +24,7 @@ def test():
     db.insert("T1", 10, 'Fiftieth Entry')
 
     db.edit_value('T', 1, 'rsw')
+    db.edit_values_many('T', [1, 'First VALUE', 2, 'Second VALUE', 3, 'Third VALUE'])
 
     print("\n Для нескольких фильтров \n")
     print(dict(db.filter_value("T1", "'Ent' in").items())

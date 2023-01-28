@@ -58,16 +58,18 @@ class AntDb:
                 return True
         return False
 
-    # def edit_value_many(self, table_name: Union[str, int, float], keys_values_list: list[Union[str, int, float]]) -> None:
-    #     if not table_name in self._db.keys():
-    #         self._db[table_name] = {}
-    #     for i in range(len(keys_values_list)):
-    #         check = {keys_values_list[i]: keys_values_list[i+1]} != self._db[table_name]
-    #         if check is True:
-    #             self._db[table_name].update({keys_values_list[i]: keys_values_list[i+1]})
-    #             self._save()
-    #         else:
-    #             pass
+    def edit_values_many(self, table_name: Union[str, int, float], keys_values_list: list[Union[str, int, float]]) -> Any:
+        if not table_name in self._db.keys():
+            self._db[table_name] = {}
+        init = iter(keys_values_list)
+        check = {init: init} != self._db[table_name]
+        if check is True:
+            init1 = iter(keys_values_list)
+            keys_values_dict = dict(zip(init1, init1))
+            self._db[table_name].update(keys_values_dict)
+            self._save()
+        else:
+            return False
 
     def insert_many(self, table_name: Union[str, int, float], keys_values_list: list[Union[str, int, float]]) -> None:
         if not table_name in self._db.keys():
