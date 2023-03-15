@@ -1,8 +1,10 @@
 from main import AntDb
 
 
+db = AntDb("db.json")
+
+
 def test():
-    db = AntDb("db.json")
     db.create_table("T")
     db.insert("T", 1, "First Entry")
     db.insert("T", 2, "Second Entry")
@@ -44,5 +46,13 @@ def test():
     """
 
 
+def Test1():
+    print("\n\n Вывесьти таблицу \n\n")
+    print(db._db)
+    print(db._db['T'])
+    print(db._db['T1'])
+
+
 test()
+Test1()
 
